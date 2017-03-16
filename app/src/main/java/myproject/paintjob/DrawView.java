@@ -36,7 +36,6 @@ public class DrawView extends View {
         lists = new ArrayList<>();
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
         for (int i = 0; i < lists.size(); i++) {
@@ -49,7 +48,6 @@ public class DrawView extends View {
     }
 
     private void startTouch(float x, float y) {
-
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
@@ -61,19 +59,19 @@ public class DrawView extends View {
         mY = y;
     }
 
-    private void endTouch(float x,float y) {
+    private void endTouch(float x, float y) {
         //mPath.lineTo(mX, mY);
-        mPath.setLastPoint(x,y);
+        mPath.setLastPoint(x, y);
     }
 
-    public void clearCanvas(){
+    public void clearCanvas() {
         for (int i = 0; i < lists.size(); i++) {
             DrawDetails detail = lists.get(i);
             mPath = detail.getPath();
             mPath.reset();
         }
+        invalidate();
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -88,7 +86,7 @@ public class DrawView extends View {
                 moveEvent(dX, dY);
                 break;
             case MotionEvent.ACTION_UP:
-                endTouch(dX,dY);
+                endTouch(dX, dY);
                 break;
         }
         invalidate();
@@ -97,16 +95,16 @@ public class DrawView extends View {
 
     public void setSize(float size) {
         this.brushSize = size;
-        addPath(brushSize,color);
+        addPath(brushSize, color);
     }
 
     public void setPaintColor(int color) {
         this.color = color;
-        addPath(brushSize,color);
+        addPath(brushSize, color);
     }
 
     //new Path and paint
-    private void addPath(float size,int color){
+    private void addPath(float size, int color) {
         mPath = new Path();
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);

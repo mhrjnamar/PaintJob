@@ -5,15 +5,11 @@
     android:gravity="center"
     android:orientation="vertical">
 
-
         <View
             android:id="@+id/brush"
             android:layout_width="32dp"
             android:layout_gravity="center"
             android:layout_height="32dp"
             android:padding="8dp" />
-
-
-
 
 </LinearLayout>

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">PaintJob</string>
+    <string name="brush">Brush</string>
+    <string name="eraser">Eraser</string>
+    <string name="clear">Clear</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="clear_all">Clear All</string>
 </resources>

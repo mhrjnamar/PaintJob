@@ -8,31 +8,61 @@ import android.graphics.RectF;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-public class PaintSpace extends AppCompatActivity {
+public class PaintSpace extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     private static final String TAG = "PaintSpace";
 
     private RecyclerView colorList;
     private RecyclerView brushList;
     private ColorAdapter colorAdapter;
     private BrushAdapters brushAdapter;
-    private TabLayout tabLayout;
     private DrawView drawView;
+    private BottomNavigationView bottomMenu;
+    private LinearLayout selectionView, bottomSheet;
+    private TextView clearAll;
+    private BottomSheetBehavior behavior;
+
+    static float pxIntoDp(float px) {
+        return (px * Resources.getSystem().getDisplayMetrics().density + 0.5F);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paint_space);
+
         setUpRecyclerViews();
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+
         drawView = (DrawView) findViewById(R.id.drawView);
+        bottomMenu = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        selectionView = (LinearLayout) findViewById(R.id.selectionView);
+        bottomSheet = (LinearLayout) findViewById(R.id.bottomSheet);
+        clearAll = (TextView) findViewById(R.id.clearAll);
+
+        clearAll.setOnClickListener(this);
+        bottomMenu.setOnNavigationItemSelectedListener(this);
+        drawView.setPaintColor(R.color.colorOne);
+        drawView.setSize(4f);
+        behavior = BottomSheetBehavior.from(bottomSheet);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void setUpRecyclerViews() {
@@ -47,6 +77,35 @@ public class PaintSpace extends AppCompatActivity {
 
         colorList.setAdapter(colorAdapter);
         brushList.setAdapter(brushAdapter);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        clearAll.setVisibility(View.GONE);
+        selectionView.setVisibility(View.GONE);
+        colorList.setVisibility(View.GONE);
+        switch (item.getItemId()) {
+            case R.id.brush:
+                selectionView.setVisibility(View.VISIBLE);
+                colorList.setVisibility(View.VISIBLE);
+                break;
+            case R.id.eraser:
+                selectionView.setVisibility(View.VISIBLE);
+                drawView.setPaintColor(android.R.color.white);
+                break;
+            case R.id.clear:
+                clearAll.setVisibility(View.VISIBLE);
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.equals(clearAll)){
+            drawView.clearCanvas();
+        }
     }
 
 
@@ -87,9 +146,7 @@ public class PaintSpace extends AppCompatActivity {
             }
         }
     }
-    static float pxIntoDp(float px) {
-        return  (px * Resources.getSystem().getDisplayMetrics().density + 0.5F);
-    }
+
     class BrushAdapters extends RecyclerView.Adapter<BrushAdapters.BrushHolder> {
         float[] brushes = {4, 6, 8, 10, 12, 16};
 
@@ -110,14 +167,14 @@ public class PaintSpace extends AppCompatActivity {
                     paint.setAntiAlias(true);
                     paint.setStyle(Paint.Style.FILL);
                     float r = pxIntoDp(brushes[holder.getAdapterPosition()]);
-                    float x = (canvas.getWidth()- r) / 2 ;
-                    float y = (canvas.getHeight()- r) / 2;
+                    float x = (canvas.getWidth() - r) / 2;
+                    float y = (canvas.getHeight() - r) / 2;
 
 
-                    RectF rectf = new RectF(0,0,r,r);
-                    rectf.offset(x,y);
-                  //  canvas.drawCircle(x, y, r, paint);
-                    canvas.drawOval(rectf,paint);
+                    RectF rectf = new RectF(0, 0, r, r);
+                    rectf.offset(x, y);
+                    //  canvas.drawCircle(x, y, r, paint);
+                    canvas.drawOval(rectf, paint);
                 }
             };
             ShapeDrawable drawable = new ShapeDrawable();
