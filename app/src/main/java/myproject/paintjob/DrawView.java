@@ -105,6 +105,7 @@ public class DrawView extends View {
         addPath(brushSize,color);
     }
 
+    //new Path and paint
     private void addPath(float size,int color){
         mPath = new Path();
         mPaint = new Paint();
@@ -112,5 +113,6 @@ public class DrawView extends View {
         mPaint.setStrokeWidth(size);
         mPaint.setColor(getResources().getColor(color));
         lists.add(new DrawDetails(mPaint, mPath));
+
     }
 }
