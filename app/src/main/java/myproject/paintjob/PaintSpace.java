@@ -34,6 +34,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
     private LinearLayout selectionView, bottomSheet;
     private TextView clearAll;
     private BottomSheetBehavior behavior;
+    private MenuItem undo, redo;
 
     static float pxIntoDp(float px) {
         return (px * Resources.getSystem().getDisplayMetrics().density + 0.5F);
@@ -43,7 +44,6 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paint_space);
-
         setUpRecyclerViews();
 
         drawView = (DrawView) findViewById(R.id.drawView);
@@ -56,13 +56,33 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         bottomMenu.setOnNavigationItemSelectedListener(this);
         drawView.setPaintColor(R.color.colorOne);
         drawView.setSize(4f);
+        drawView.setOnClickListener(this);
         behavior = BottomSheetBehavior.from(bottomSheet);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        undo = menu.findItem(R.id.undo);
+        redo = menu.findItem(R.id.redo);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.undo) {
+            undo.setEnabled(drawView.undo());
+            redo.setEnabled(true);
+        } else if (item.getItemId() == R.id.redo) {
+            redo.setEnabled(drawView.redo());
+            undo.setEnabled(true);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUpRecyclerViews() {
@@ -81,7 +101,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         clearAll.setVisibility(View.GONE);
         selectionView.setVisibility(View.GONE);
         colorList.setVisibility(View.GONE);
@@ -103,8 +123,10 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
 
     @Override
     public void onClick(View v) {
-        if (v.equals(clearAll)){
+        if (v.equals(clearAll)) {
             drawView.clearCanvas();
+        }else if(v.equals(drawView)){
+            undo.setEnabled(true);
         }
     }
 
@@ -169,7 +191,6 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
                     float r = pxIntoDp(brushes[holder.getAdapterPosition()]);
                     float x = (canvas.getWidth() - r) / 2;
                     float y = (canvas.getHeight() - r) / 2;
-
 
                     RectF rectf = new RectF(0, 0, r, r);
                     rectf.offset(x, y);

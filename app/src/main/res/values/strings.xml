@@ -6,4 +6,5 @@
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
     <string name="clear_all">Clear All</string>
+    <string name="save">Save</string>
 </resources>

@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -25,6 +26,8 @@ public class DrawView extends View {
     private ArrayList<DrawDetails> lists;
     private float brushSize = 4f;
     private int color = R.color.colorOne;
+    private ArrayList<DrawDetails> cacheDetails;
+    private int undoCount = 0;
 
     public DrawView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -34,6 +37,7 @@ public class DrawView extends View {
         mPaint.setStrokeWidth(8);
         mPath = new Path();
         lists = new ArrayList<>();
+        cacheDetails = new ArrayList<>();
     }
 
     @Override
@@ -73,6 +77,36 @@ public class DrawView extends View {
         invalidate();
     }
 
+    public boolean undo() {
+        if (lists.size() > 0) {
+            cacheDetails.add(lists.get(lists.size() - 1));
+            Log.i(TAG, "undo:size "+lists.size());
+            lists.remove(lists.size() - 1);
+            invalidate();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean redo() {
+        if (cacheDetails != null) {
+            if (cacheDetails.size() > 0) {
+                lists.add(cacheDetails.get(0));
+                cacheDetails.remove(0);
+                ArrayList<DrawDetails> dummy = new ArrayList<>();
+                for (DrawDetails details : cacheDetails) {
+                    dummy.add(details);
+                }
+                cacheDetails.clear();
+                cacheDetails.addAll(dummy);
+                invalidate();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float dX = event.getX();
@@ -80,6 +114,7 @@ public class DrawView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                addPath(brushSize, color);
                 startTouch(dX, dY);
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -95,12 +130,10 @@ public class DrawView extends View {
 
     public void setSize(float size) {
         this.brushSize = size;
-        addPath(brushSize, color);
     }
 
     public void setPaintColor(int color) {
         this.color = color;
-        addPath(brushSize, color);
     }
 
     //new Path and paint
