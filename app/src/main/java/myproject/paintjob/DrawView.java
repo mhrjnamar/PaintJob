@@ -77,6 +77,7 @@ public class DrawView extends View {
         invalidate();
     }
 
+    //undo drawing
     public boolean undo() {
         if (lists.size() > 0) {
             cacheDetails.add(lists.get(lists.size() - 1));
@@ -88,6 +89,7 @@ public class DrawView extends View {
         return false;
     }
 
+    //redo drawing
     public boolean redo() {
         if (cacheDetails != null) {
             if (cacheDetails.size() > 0) {
