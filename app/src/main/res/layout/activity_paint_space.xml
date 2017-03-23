@@ -9,7 +9,16 @@
     <myproject.paintjob.DrawView
         android:id="@+id/drawView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:visibility="visible" />
+
+    <myproject.paintjob.CanvasBrushDrawing
+        android:id="@+id/oooo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/bottomSheet"
@@ -36,23 +45,10 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/colorList"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="4dp" />
+               />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_margin="16dp"
-                android:background="@drawable/divider" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/brushList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="4dp" />
         </LinearLayout>
 
         <TextView
@@ -60,9 +56,9 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:gravity="center"
-            android:visibility="gone"
             android:text="@string/clear_all"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="gone" />
     </LinearLayout>
 
 

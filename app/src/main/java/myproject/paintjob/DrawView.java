@@ -2,12 +2,10 @@ package myproject.paintjob;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,6 +15,7 @@ import java.util.ArrayList;
  * Created by User on 3/13/2017.
  */
 
+// Main Drawing View
 public class DrawView extends View {
     private static final String TAG = "DrawView";
     private float mX;
@@ -27,14 +26,10 @@ public class DrawView extends View {
     private float brushSize = 4f;
     private int color = R.color.colorOne;
     private ArrayList<DrawDetails> cacheDetails;
-    private int undoCount = 0;
 
     public DrawView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(8);
         mPath = new Path();
         lists = new ArrayList<>();
         cacheDetails = new ArrayList<>();
@@ -64,7 +59,6 @@ public class DrawView extends View {
     }
 
     private void endTouch(float x, float y) {
-        //mPath.lineTo(mX, mY);
         mPath.setLastPoint(x, y);
     }
 
@@ -80,9 +74,7 @@ public class DrawView extends View {
     //undo drawing
     public boolean undo() {
         if (lists.size() > 0) {
-            cacheDetails.add(lists.get(lists.size() - 1));
-            Log.i(TAG, "undo:size "+lists.size());
-            lists.remove(lists.size() - 1);
+            cacheDetails.add(lists.remove(lists.size() - 1));
             invalidate();
             return true;
         }
@@ -93,14 +85,7 @@ public class DrawView extends View {
     public boolean redo() {
         if (cacheDetails != null) {
             if (cacheDetails.size() > 0) {
-                lists.add(cacheDetails.get(0));
-                cacheDetails.remove(0);
-                ArrayList<DrawDetails> dummy = new ArrayList<>();
-                for (DrawDetails details : cacheDetails) {
-                    dummy.add(details);
-                }
-                cacheDetails.clear();
-                cacheDetails.addAll(dummy);
+                lists.add(cacheDetails.remove(cacheDetails.size() - 1));
                 invalidate();
                 return true;
             }
@@ -116,7 +101,7 @@ public class DrawView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                addPath(brushSize, color);
+                addPath(mPaint);
                 startTouch(dX, dY);
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -130,6 +115,14 @@ public class DrawView extends View {
         return true;
     }
 
+    public Paint getPaint() {
+        return mPaint;
+    }
+
+    public void setPaint(Paint paint){
+        this.mPaint = paint;
+    }
+
     public void setSize(float size) {
         this.brushSize = size;
     }
@@ -139,13 +132,12 @@ public class DrawView extends View {
     }
 
     //new Path and paint
-    private void addPath(float size, int color) {
+    private void addPath(Paint paint) {
         mPath = new Path();
         mPaint = new Paint();
+        this.mPaint = paint;
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(size);
-        mPaint.setColor(getResources().getColor(color));
         lists.add(new DrawDetails(mPaint, mPath));
-
     }
+
 }
