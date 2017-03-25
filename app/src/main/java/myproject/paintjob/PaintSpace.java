@@ -39,7 +39,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         cornerPaint.setPathEffect(new CornerPathEffect(pxIntoDp(10)));
         cornerPaint.setColor(Color.BLACK);
         cornerPaint.setAntiAlias(true);
-        cornerPaint.setStrokeWidth(pxIntoDp(1));
+        cornerPaint.setStrokeWidth(pxIntoDp(3));
         Path cornerPath = new Path();
         cornerPath.moveTo(pxIntoDp(12), pxIntoDp(24));
         cornerPath.lineTo(pxIntoDp(20), pxIntoDp(32));
@@ -52,7 +52,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         dashPaint.setPathEffect(new DashPathEffect(new float[]{5f, 5f}, 30f));
         dashPaint.setColor(Color.BLACK);
         dashPaint.setAntiAlias(true);
-        dashPaint.setStrokeWidth(pxIntoDp(1));
+        dashPaint.setStrokeWidth(pxIntoDp(3));
         Path dashPath = new Path();
         dashPath.moveTo(pxIntoDp(12), pxIntoDp(24));
         dashPath.lineTo(pxIntoDp(20), pxIntoDp(32));
@@ -88,8 +88,8 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         trianglePath.lineTo(pxIntoDp(48), pxIntoDp(48));
         trianglePath.lineTo(pxIntoDp(48), pxIntoDp(12));
 
-        trianglePaint.setPathEffect(new PathDashPathEffect(trianglePath,pxIntoDp(20),pxIntoDp(5),PathDashPathEffect.Style.TRANSLATE));
-        
+        trianglePaint.setPathEffect(new PathDashPathEffect(trianglePath, pxIntoDp(20), pxIntoDp(5), PathDashPathEffect.Style.TRANSLATE));
+
         items = new ArrayList<>();
         items.add(new Item(cornerPaint, cornerPath));
         items.add(new Item(dashPaint, dashPath));
@@ -97,7 +97,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         items.add(new Item(embrossPaint, embrossPath));
         items.add(new Item(trianglePaint, trianglePath));
     }
-    
+
     private RecyclerView colorList;
     private BrushTypeAdapter colorAdapter;
     private DrawView drawView;
@@ -111,11 +111,12 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         return (px * Resources.getSystem().getDisplayMetrics().density + 0.5F);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paint_space);
-        
+
         //initialize recyclerviews
         setUpRecyclerViews();
 
@@ -129,7 +130,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
 
         drawView.setOnClickListener(this);
         clearAll.setOnClickListener(this);
-        
+
         bottomMenu.setOnNavigationItemSelectedListener(this);
         behavior = BottomSheetBehavior.from(bottomSheet);
     }
@@ -168,7 +169,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        behavior.setState(behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED ? BottomSheetBehavior.STATE_EXPANDED : BottomSheetBehavior.STATE_COLLAPSED);
         clearAll.setVisibility(View.GONE);
         selectionView.setVisibility(View.GONE);
         colorList.setVisibility(View.GONE);
@@ -176,14 +177,14 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
             case R.id.brush:
                 selectionView.setVisibility(View.VISIBLE);
                 colorList.setVisibility(View.VISIBLE);
-                break;
+                return true;
             case R.id.eraser:
                 selectionView.setVisibility(View.VISIBLE);
                 drawView.setPaintColor(android.R.color.white);
-                break;
+                return true;
             case R.id.clear:
                 clearAll.setVisibility(View.VISIBLE);
-                break;
+                return true;
         }
         return false;
     }
@@ -210,6 +211,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
     }
 
     class BrushTypeAdapter extends RecyclerView.Adapter<BrushTypeAdapter.BrushHolder> {
+        int[] colors = {R.color.colorFive, R.color.colorSix, R.color.colorSeven, R.color.colorThirteen, R.color.colorFive};
 
         @Override
         public BrushTypeAdapter.BrushHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -220,7 +222,7 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
         public void onBindViewHolder(BrushTypeAdapter.BrushHolder holder, int position) {
             Item item = items.get(position);
             holder.view.setPaint(item.paint, item.path);
-            holder.view.setLayerType(View.LAYER_TYPE_SOFTWARE,item.paint);
+            holder.view.setLayerType(View.LAYER_TYPE_SOFTWARE, item.paint);
         }
 
         @Override
@@ -238,6 +240,8 @@ public class PaintSpace extends AppCompatActivity implements BottomNavigationVie
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
+                        item.paint.setStrokeWidth(pxIntoDp(5));
+                        item.paint.setColor(getResources().getColor(colors[getAdapterPosition()]));
                         drawView.setPaint(item.paint);
                     }
                 });

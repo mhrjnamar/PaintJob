@@ -101,7 +101,7 @@ public class DrawView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                addPath(mPaint);
+                addPath();
                 startTouch(dX, dY);
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -120,6 +120,7 @@ public class DrawView extends View {
     }
 
     public void setPaint(Paint paint){
+        mPaint = new Paint();
         this.mPaint = paint;
     }
 
@@ -128,14 +129,14 @@ public class DrawView extends View {
     }
 
     public void setPaintColor(int color) {
-        this.color = color;
+        mPaint = new Paint();
+        mPaint.setStrokeWidth(10);
+        mPaint.setColor(getResources().getColor(color));
     }
 
     //new Path and paint
-    private void addPath(Paint paint) {
+    private void addPath() {
         mPath = new Path();
-        mPaint = new Paint();
-        this.mPaint = paint;
         mPaint.setStyle(Paint.Style.STROKE);
         lists.add(new DrawDetails(mPaint, mPath));
     }
